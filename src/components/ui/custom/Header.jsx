@@ -6,7 +6,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
-import { useNavigation } from 'react-router-dom';
+import { Link, useNavigation } from 'react-router-dom';
 import { FcGoogle } from "react-icons/fc";
 import axios from 'axios';
 import {
@@ -48,7 +48,7 @@ function Header() {
 
   return (
     <div className='p-3 shadow-sm flex justify-between items-center px-5'>
-        <img src="/logo.svg" alt="" />
+        <Link to="/"><img src="/logo.svg" alt="" /></Link>
         <div>
           {user ? 
             <div className='flex items-center gap-3'>
