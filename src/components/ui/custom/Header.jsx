@@ -54,8 +54,9 @@ function Header() {
             <div className='flex items-center gap-3'>
               <a href='/create-trip'><Button variant="outline" className='rounded-full'>+ Create Trip </Button></a>
               <a href='/my-trips'><Button variant="outline" className='rounded-full'> My Trips </Button></a>
+              {console.log('User picture URL:', user?.picture)}
               <Popover>
-                <PopoverTrigger><img src={user?.picture} alt="" className='h-[35px] w-[35px] rounded-full'/></PopoverTrigger>
+                <PopoverTrigger> <img src={user?.picture} alt="" className='h-[35px] w-[35px] rounded-full'/></PopoverTrigger>
                 <PopoverContent>
                   <h2 className='cursor-pointer' onClick={()=>{
                     googleLogout();

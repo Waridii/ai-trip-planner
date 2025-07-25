@@ -1,45 +1,89 @@
-import React, { useEffect, useState } from 'react'
-import { IoIosSend } from "react-icons/io";
-import { Button } from '@/components/ui/button';
+// src/view-trip/components/InfoSection.jsx
+
 import { GetPlaceDetails, PHOTO_REF_URL } from '@/service/GlobalApi';
+import React, { useEffect, useState } from 'react';
 
+function InfoSection({ trip }) {
+    const [photoUrl, setPhotoUrl] = useState();
 
-function InfoSection({trip}) {
+    useEffect(() => {
+        if (trip) {
+            GetPlaceImg();
+        }
+    }, [trip]);
 
-  const [photoUrl,setPhotoUrl]=useState();
-  useEffect(()=>{
-    trip&&GetPlacePhoto();
-  },[trip])
+    const GetPlaceImg = async () => {
+        try {
+            const data = {
+                textQuery:
+                    trip?.tripData?.location?.formatted_address ||
+                    trip?.tripData?.location ||
+                    trip?.location ||
+                    'Travel Destination',
+            };
 
-  const GetPlacePhoto=async()=>{
+            const resp = await GetPlaceDetails(data);
+            const photoName = resp?.data?.places?.[0]?.photos?.[3]?.name;
+            if (photoName) {
+                const PhotoUrl = PHOTO_REF_URL.replace('{NAME}', photoName);
+                setPhotoUrl(PhotoUrl);
+            }
+        } catch (error) {
+            console.error('Error fetching place image:', error);
+        }
+    };
 
-    const data={
-      textQuery:trip?.userSelection?.location?.formatted_address
-    }
-    const result=await GetPlaceDetails(data).then(resp=>{
-      console.log(resp.data.places[0].photos[3].name)
+    const locationName =
+        trip?.tripData?.location?.formatted_address ||
+        trip?.tripData?.location ||
+        trip?.location ||
+        'Unknown Destination';
 
-      const PhotoUrl=PHOTO_REF_URL.replace('{NAME}',resp.data.places[0].photos[3].name);
-      setPhotoUrl(PhotoUrl);
-    })
-  }
-  return (
-    <div>
-        <img src={photoUrl?photoUrl:"https://github.com/oykuky/Full-Stack-AI-Trip-Planner/blob/main/public/road-trip-vacation.jpg?raw=true"} alt="" className='h-[340px] w-full object-cover rounded'/>
+    const noOfDays =
+        trip?.tripData?.noOfDays ||
+        trip?.noOfDays ||
+        trip?.tripData?.duration_days ||
+        trip?.userSelection?.noOfDays ||
+        'N/A';
 
-        <div className='flex justify-between items-center'>
-            <div className='my-5 flex flex-col gap-2'>
-                <h2 className='font-bold text-2xl'>{trip?.userSelection?.location?.label}</h2>
-                <div className='flex gap-5'>
-                    <h2 className='p-1 px-3 bg-gray-200 rounded-full text-gray-500 text-xs md:text-md'>📅{trip?.userSelection?.noOfDays} Day</h2>
-                    <h2 className='p-1 px-3 bg-gray-200 rounded-full text-gray-500 text-xs md:text-md'>💰{trip?.userSelection?.budget} Budget</h2>
-                    <h2 className='p-1 px-3 bg-gray-200 rounded-full text-gray-500 text-xs md:text-md'>👩‍👧‍👦No. Of Travelers: {trip?.userSelection?.traveler}</h2>
+    const travelers =
+        trip?.tripData?.traveler ||
+        trip?.traveler ||
+        trip?.tripData?.travelers ||
+        'N/A';
+
+    const budget =
+        trip?.tripData?.budget ||
+        trip?.tripData?.budget_level ||
+        trip?.budget ||
+        trip?.userSelection?.budget ||
+        'N/A';
+
+    return (
+        <div>
+            <img
+                src={photoUrl ? photoUrl : '/road-trip-vacation.jpg'}
+                className='h-[330px] w-full object-cover rounded-xl'
+                alt={locationName}
+            />
+            <div className='flex justify-between items-center'>
+                <div className='my-6 flex flex-col gap-2'>
+                    <h2 className='font-bold text-2xl'>{locationName}</h2>
+                    <div className='flex gap-3 flex-wrap mt-4'>
+                        <h2 className='bg-gray-200 font-medium text-gray-600 rounded-full p-1 px-4 md:text-md'>
+                            🗓️ {noOfDays} {noOfDays === 1 ? 'Day' : 'Days'}
+                        </h2>
+                        <h2 className='bg-gray-200 font-medium text-gray-600 rounded-full p-1 px-4 md:text-md'>
+                            👩‍👧‍👦 Travelers: {travelers}
+                        </h2>
+                        <h2 className='bg-gray-200 font-medium text-gray-600 rounded-full p-1 px-4 md:text-md'>
+                            💵 Budget: {budget}
+                        </h2>
+                    </div>
                 </div>
             </div>
-             <Button><IoIosSend /></Button>
         </div>
-    </div>
-  )
+    );
 }
 
-export default InfoSection
+export default InfoSection;
